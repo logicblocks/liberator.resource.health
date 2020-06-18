@@ -1,7 +1,6 @@
 ToDo
 ====
 
-* Include version in health response
 * Allow for dependencies health
   * Database
   * External service

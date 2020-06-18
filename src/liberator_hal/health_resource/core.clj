@@ -1,20 +1,32 @@
 (ns liberator-hal.health-resource.core
   (:require
+   [clojure.string :as string]
+   [halboy.resource :as hal]
+   [hype.core :as hype]
+
    [liberator-mixin.core :as mixin]
    [liberator-mixin.json.core :as json-mixin]
    [liberator-mixin.hypermedia.core :as hypermedia-mixin]
-   [liberator-mixin.hal.core :as hal-mixin]
-   [halboy.resource :as hal]
-   [hype.core :as hype]))
+   [liberator-mixin.hal.core :as hal-mixin]))
+
+(defn- read-version [path]
+  (string/trim (slurp path)))
 
 (defn definitions
   ([dependencies] (definitions dependencies {}))
   ([{:keys [routes]}
-    _]
-   {:handle-ok
-    (fn [{:keys [request]}]
-      (hal/new-resource
-        (hype/absolute-url-for request routes :health)))}))
+    {:keys [version-file-path]}]
+   {:initialize-context
+    (fn [_]
+      (when version-file-path
+        {:version (read-version version-file-path)}))
+
+    :handle-ok
+    (fn [{:keys [request version]}]
+      (cond->
+        (hal/new-resource
+          (hype/absolute-url-for request routes :health))
+        (some? version) (hal/add-property :version version)))}))
 
 (defn handler
   ([dependencies] (handler dependencies {}))
