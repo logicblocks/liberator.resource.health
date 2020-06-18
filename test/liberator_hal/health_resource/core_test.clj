@@ -1,15 +1,15 @@
 (ns liberator-hal.health-resource.core-test
   (:require
-    [clojure.test :refer :all]
+   [clojure.test :refer :all]
 
-    [halboy.resource :as hal]
-    [halboy.json :as hal-json]
+   [halboy.resource :as hal]
+   [halboy.json :as hal-json]
 
-    [ring.mock.request :as ring]
-    [ring.middleware.keyword-params :as ring-keyword-params]
-    [ring.middleware.params :as ring-params]
+   [ring.mock.request :as ring]
+   [ring.middleware.keyword-params :as ring-keyword-params]
+   [ring.middleware.params :as ring-params]
 
-    [liberator-hal.health-resource.core :as health-resource]))
+   [liberator-hal.health-resource.core :as health-resource]))
 
 (def health-route ["/health" :health])
 
