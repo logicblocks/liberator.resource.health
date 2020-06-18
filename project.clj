@@ -5,9 +5,9 @@
   :license {:name "The MIT License"
             :url  "https://opensource.org/licenses/MIT"}
 
-  :dependencies [[halboy "5.1.0"]
+  :dependencies [[halboy "5.1.1"]
                  [b-social/hype "1.0.0"]
-                 [b-social/liberator-mixin "0.0.48"]]
+                 [b-social/liberator-mixin "0.0.52"]]
 
   :plugins [[lein-cloverage "1.1.2"]
             [lein-shell "0.5.0"]
@@ -23,9 +23,9 @@
   :profiles
   {:shared
    {:dependencies [[org.clojure/clojure "1.10.1"]
-                   [ring/ring-core "1.8.0"]
+                   [ring/ring-core "1.8.1"]
                    [ring/ring-mock "0.4.0"]
-                   [nrepl "0.6.0"]
+                   [nrepl "0.7.0"]
                    [eftest "0.5.9"]]}
    :dev
    [:shared {:source-paths ["dev"]
