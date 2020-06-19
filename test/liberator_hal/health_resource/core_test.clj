@@ -84,3 +84,43 @@
         result (handler request)
         resource (hal-json/json->resource (:body result))]
     (is (= (hal/get-property resource :version) "missing"))))
+
+(deftest does-not-include-dependencies-by-default
+  (let [handler (resource-handler (dependencies))
+        request (ring/request :get "http://localhost/health")
+        result (handler request)
+        resource (hal-json/json->resource (:body result))]
+    (is (not (contains? (hal/properties resource) :dependencies)))))
+
+(deftest includes-health-check-result-for-single-dependency
+  (let [dependency-check
+        (health-resource/dependency-check
+          :thing (fn [_] {:healthy true}))
+        handler (resource-handler (dependencies)
+                  {:dependency-checks [dependency-check]})
+        request (ring/request :get "http://localhost/health")
+        result (handler request)
+        resource (hal-json/json->resource (:body result))]
+    (is (= (hal/get-in-properties resource
+             [:dependencies :thing])
+          {:healthy true}))))
+
+(deftest includes-health-check-result-for-many-dependencies
+  (let [dependency-1-check
+        (health-resource/dependency-check
+          :thing-1 (fn [_] {:healthy true}))
+        dependency-2-check
+        (health-resource/dependency-check
+          :thing-2 (fn [_] {:healthy false}))
+        handler (resource-handler (dependencies)
+                  {:dependency-checks [dependency-1-check
+                                       dependency-2-check]})
+        request (ring/request :get "http://localhost/health")
+        result (handler request)
+        resource (hal-json/json->resource (:body result))]
+    (is (= (hal/get-in-properties resource
+             [:dependencies :thing1])
+          {:healthy true}))
+    (is (= (hal/get-in-properties resource
+             [:dependencies :thing2])
+          {:healthy false}))))

@@ -17,21 +17,40 @@
     (catch FileNotFoundException _
       "missing")))
 
+(defn dependency-check [name check-fn]
+  {:name     name
+   :check-fn check-fn})
+
 (defn definitions
   ([dependencies] (definitions dependencies {}))
-  ([{:keys [routes]}
-    {:keys [version-file-path]}]
+  ([{:keys [routes] :as dependencies}
+    {:keys [version-file-path
+            dependency-checks]}]
    {:initialize-context
     (fn [_]
-      (when version-file-path
-        {:version (read-version version-file-path)}))
+      (let [dependency-results
+            (reduce
+              (fn [dependency-results {:keys [name check-fn]}]
+                (assoc dependency-results
+                  name (check-fn dependencies)))
+              nil
+              dependency-checks)]
+        (cond-> {}
+          (some? version-file-path)
+          (merge {:version (read-version version-file-path)})
+
+          (some? dependency-results)
+          (merge {:dependency-results dependency-results}))))
 
     :handle-ok
-    (fn [{:keys [request version]}]
-      (cond->
-        (hal/new-resource
-          (hype/absolute-url-for request routes :health))
-        (some? version) (hal/add-property :version version)))}))
+    (fn [{:keys [request version dependency-results]}]
+      (cond-> (hal/new-resource
+                (hype/absolute-url-for request routes :health))
+        (some? version)
+        (hal/add-property :version version)
+
+        (some? dependency-results)
+        (hal/add-property :dependencies dependency-results)))}))
 
 (defn handler
   ([dependencies] (handler dependencies {}))
