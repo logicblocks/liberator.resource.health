@@ -55,6 +55,13 @@
         resource (hal-json/json->resource (:body result))]
     (is (= (hal/get-href resource :discovery) "http://localhost/"))))
 
+(deftest does-not-include-a-version-attribute-by-default
+  (let [handler (resource-handler (dependencies))
+        request (ring/request :get "http://localhost/health")
+        result (handler request)
+        resource (hal-json/json->resource (:body result))]
+    (is (not (contains? (hal/properties resource) :version)))))
+
 (deftest includes-version-attribute-when-version-file-path-provided
   (let [version "1.2.0+fc9c14c"
         version-file-path (files/write-lines
@@ -68,3 +75,12 @@
     (files/delete version-file-path)
 
     (is (= (hal/get-property resource :version) version))))
+
+(deftest includes-version-of-missing-when-version-file-not-readable
+  (let [version-file-path "/some/missing/version/file"
+        handler (resource-handler (dependencies)
+                  {:version-file-path (str version-file-path)})
+        request (ring/request :get "http://localhost/health")
+        result (handler request)
+        resource (hal-json/json->resource (:body result))]
+    (is (= (hal/get-property resource :version) "missing"))))

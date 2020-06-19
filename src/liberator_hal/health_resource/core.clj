@@ -7,10 +7,15 @@
    [liberator-mixin.core :as mixin]
    [liberator-mixin.json.core :as json-mixin]
    [liberator-mixin.hypermedia.core :as hypermedia-mixin]
-   [liberator-mixin.hal.core :as hal-mixin]))
+   [liberator-mixin.hal.core :as hal-mixin])
+  (:import
+   [java.io FileNotFoundException]))
 
 (defn- read-version [path]
-  (string/trim (slurp path)))
+  (try
+    (string/trim (slurp path))
+    (catch FileNotFoundException _
+      "missing")))
 
 (defn definitions
   ([dependencies] (definitions dependencies {}))
