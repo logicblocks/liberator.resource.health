@@ -7,7 +7,7 @@
 
   :dependencies [[halboy "5.1.1"]
                  [b-social/hype "1.0.0"]
-                 [b-social/liberator-mixin "0.0.52"]]
+                 [b-social/liberator-mixin "0.0.56"]]
 
   :plugins [[lein-cloverage "1.1.2"]
             [lein-shell "0.5.0"]
@@ -22,14 +22,14 @@
 
   :profiles
   {:shared
-   {:dependencies [[org.clojure/clojure "1.10.1"]
+   {:dependencies [[org.clojure/clojure "1.10.3"]
 
-                   [io.logicblocks/pathological "0.1.19"]
+                   [io.logicblocks/pathological "0.1.21"]
 
-                   [ring/ring-core "1.8.1"]
+                   [ring/ring-core "1.9.4"]
                    [ring/ring-mock "0.4.0"]
 
-                   [nrepl "0.7.0"]
+                   [nrepl "0.8.3"]
 
                    [eftest "0.5.9"]]}
    :dev

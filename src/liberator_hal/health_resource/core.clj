@@ -17,8 +17,8 @@
     (catch FileNotFoundException _
       "missing")))
 
-(defn dependency-check [name check-fn]
-  {:name     name
+(defn dependency-check [check-name check-fn]
+  {:name     check-name
    :check-fn check-fn})
 
 (defn definitions
