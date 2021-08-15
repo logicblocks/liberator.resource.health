@@ -26,7 +26,9 @@
 (defn dependencies
   ([] (dependencies []))
   ([extra-routes]
-   {:routes (routes extra-routes)}))
+   {:database {:type :fake :data {:users [1, 2, 3]}}
+    :service {:type :remote}
+    :routes   (routes extra-routes)}))
 
 (defn resource-handler
   ([dependencies] (resource-handler dependencies {}))
@@ -124,3 +126,36 @@
     (is (= (hal/get-in-properties resource
              [:dependencies :thing2])
           {:healthy false}))))
+
+(deftest includes-all-results-returned-from-dependency-check-function
+  (let [dependency-check
+        (health-resource/dependency-check
+          :thing (fn [_] {:healthy true
+                          :latency 129}))
+        handler (resource-handler (dependencies)
+                  {:dependency-checks [dependency-check]})
+        request (ring/request :get "http://localhost/health")
+        result (handler request)
+        resource (hal-json/json->resource (:body result))]
+    (is (= (hal/get-in-properties resource
+             [:dependencies :thing])
+          {:healthy true
+           :latency 129}))))
+
+(deftest passes-dependencies-to-dependency-check-functions
+  (let [dependencies (dependencies)
+        argument (atom nil)
+        dependency-check
+        (health-resource/dependency-check
+          :thing (fn [arg]
+                   (reset! argument arg)
+                   {:healthy true}))
+        handler (resource-handler dependencies
+                  {:dependency-checks [dependency-check]})
+        request (ring/request :get "http://localhost/health")]
+    (handler request)
+
+    (is (= @argument dependencies))))
+
+(deftest executes-dependency-checks-asynchronously-by-default
+  ())
