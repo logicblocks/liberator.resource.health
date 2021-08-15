@@ -1,4 +1,4 @@
-(defproject io.logicblocks/liberator-hal.health-resource "0.1.3-RC7"
+(defproject io.logicblocks/liberator-hal.health-resource "0.1.3-RC8"
   :description "A HAL health resource for liberator"
   :url "https://github.com/logicblocks/liberator-hal.health-resource"
 
