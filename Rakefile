@@ -86,7 +86,7 @@ end
 
 RakeGithub.define_repository_tasks(
   namespace: :github,
-  repository: 'logicblocks/liberator-hal.discovery-resource',
+  repository: 'logicblocks/liberator-hal.health-resource',
 ) do |t|
   github_config =
     YAML.load_file('config/secrets/github/config.yaml')
