@@ -1,13 +1,13 @@
-(ns liberator-hal.health-resource.core
+(ns liberator.resource.health.core
   (:require
    [clojure.string :as string]
    [halboy.resource :as hal]
    [hype.core :as hype]
 
-   [liberator-mixin.core :as mixin]
-   [liberator-mixin.json.core :as json-mixin]
-   [liberator-mixin.hypermedia.core :as hypermedia-mixin]
-   [liberator-mixin.hal.core :as hal-mixin])
+   [liberator.mixin.core :as mixin]
+   [liberator.mixin.json.core :as json-mixin]
+   [liberator.mixin.hypermedia.core :as hypermedia-mixin]
+   [liberator.mixin.hal.core :as hal-mixin])
   (:import
    [java.io FileNotFoundException]))
 
@@ -22,13 +22,18 @@
    :check-fn check-fn})
 
 (defn definitions
-  ([dependencies] (definitions dependencies {}))
-  ([{:keys [routes] :as dependencies}
-    {:keys [version-file-path
-            dependency-checks]}]
+  ([dependencies]
    {:initialize-context
-    (fn [_]
-      (let [dependency-results
+    (fn [{:keys [resource] :as context}]
+      (let [version-file-path-fn (:version-file-path resource)
+            version-file-path (and version-file-path-fn
+                                (version-file-path-fn context))
+
+            dependency-checks-fn (:dependency-checks resource)
+            dependency-checks (and dependency-checks-fn
+                                (dependency-checks-fn context))
+
+            dependency-results
             (reduce
               (fn [dependency-results {:keys [name check-fn]}]
                 (assoc dependency-results
@@ -43,9 +48,9 @@
           (merge {:dependency-results dependency-results}))))
 
     :handle-ok
-    (fn [{:keys [request version dependency-results]}]
+    (fn [{:keys [request router version dependency-results]}]
       (cond-> (hal/new-resource
-                (hype/absolute-url-for request routes :health))
+                (hype/absolute-url-for request router :health))
         (some? version)
         (hal/add-property :version version)
 
@@ -54,9 +59,10 @@
 
 (defn handler
   ([dependencies] (handler dependencies {}))
-  ([dependencies options]
+  ([dependencies overrides]
    (mixin/build-resource
      (json-mixin/with-json-mixin dependencies)
      (hypermedia-mixin/with-hypermedia-mixin dependencies)
      (hal-mixin/with-hal-mixin dependencies)
-     (definitions dependencies options))))
+     (definitions dependencies)
+     overrides)))

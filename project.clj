@@ -1,42 +1,46 @@
-(defproject io.logicblocks/liberator-hal.health-resource "0.1.3-RC8"
-  :description "A HAL health resource for liberator"
-  :url "https://github.com/logicblocks/liberator-hal.health-resource"
+(defproject io.logicblocks/liberator.resource.health "0.1.3-RC8"
+  :description "A health resource for liberator."
+  :url "https://github.com/logicblocks/liberator.resource.health"
 
   :license {:name "The MIT License"
             :url  "https://opensource.org/licenses/MIT"}
 
-  :dependencies [[halboy "5.1.1"]
-                 [b-social/hype "1.0.0"]
-                 [b-social/liberator-mixin "0.0.56"]]
+  :dependencies [[io.logicblocks/halboy "6.0.0"]
+                 [io.logicblocks/hype "2.0.0"]
+                 [io.logicblocks/liberator.mixin "0.1.0-RC5"]]
 
-  :plugins [[lein-cloverage "1.1.2"]
+  :plugins [[lein-cloverage "1.2.4"]
             [lein-shell "0.5.0"]
-            [lein-ancient "0.6.15"]
+            [lein-ancient "0.7.0"]
             [lein-changelog "0.3.2"]
-            [lein-eftest "0.5.9"]
-            [lein-codox "0.10.7"]
-            [lein-cljfmt "0.6.7"]
+            [lein-cprint "1.3.3"]
+            [lein-eftest "0.6.0"]
+            [lein-codox "0.10.8"]
+            [lein-cljfmt "0.9.2"]
             [lein-kibit "0.1.8"]
             [lein-bikeshed "0.5.2"]
-            [jonase/eastwood "0.3.11"]]
+            [jonase/eastwood "1.4.0"]]
 
   :profiles
   {:shared
-   {:dependencies [[org.clojure/clojure "1.10.3"]
+   ^{:pom-scope :test}
+   {:dependencies [[org.clojure/clojure "1.11.1"]
 
-                   [io.logicblocks/pathological "0.1.21"]
+                   [io.logicblocks/pathological "0.1.22-RC2"]
 
-                   [ring/ring-core "1.9.4"]
+                   [ring/ring-core "1.10.0"]
                    [ring/ring-mock "0.4.0"]
 
-                   [nrepl "0.8.3"]
+                   [nrepl "1.1.0"]
+                   [eftest "0.6.0"]]}
 
-                   [eftest "0.5.9"]]}
    :dev
    [:shared {:source-paths ["dev"]
              :eftest       {:multithread? false}}]
+
    :test
    [:shared {:eftest {:multithread? false}}]
+
    :prerelease
    {:release-tasks
     [["shell" "git" "diff" "--exit-code"]
@@ -45,6 +49,7 @@
      ["vcs" "commit" "Pre-release version %s [skip ci]"]
      ["vcs" "tag"]
      ["deploy"]]}
+
    :release
    {:release-tasks
     [["shell" "git" "diff" "--exit-code"]
@@ -64,15 +69,17 @@
      ["vcs" "tag"]
      ["vcs" "push"]]}}
 
+  :target-path "target/%s/"
+
   :cloverage
   {:ns-exclude-regex [#"^user"]}
 
   :codox
-  {:namespaces  [#"^liberator-hal.health-resource\."]
+  {:namespaces  [#"^liberator\.resource\.health\."]
    :metadata    {:doc/format :markdown}
    :output-path "docs"
    :doc-paths   ["docs"]
-   :source-uri  "https://github.com/logicblocks/liberator-hal.health-resource/blob/{version}/{filepath}#L{line}"}
+   :source-uri  "https://github.com/logicblocks/liberator.resource.health/blob/{version}/{filepath}#L{line}"}
 
   :cljfmt {:indents ^:replace {#".*" [[:inner 0]]}}
 

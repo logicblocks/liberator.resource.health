@@ -1,6 +1,6 @@
-(ns liberator-hal.health-resource.core-test
+(ns liberator.resource.health.core-test
   (:require
-   [clojure.test :refer :all]
+   [clojure.test :refer [deftest is]]
 
    [halboy.resource :as hal]
    [halboy.json :as hal-json]
@@ -11,12 +11,12 @@
    [ring.middleware.keyword-params :as ring-keyword-params]
    [ring.middleware.params :as ring-params]
 
-   [liberator-hal.health-resource.core :as health-resource]))
+   [liberator.resource.health.core :as health-resource]))
 
 (def discovery-route ["/" :discovery])
 (def health-route ["/health" :health])
 
-(defn routes [extras]
+(defn router [extras]
   [""
    (concat
      [discovery-route
@@ -26,12 +26,12 @@
 (defn dependencies
   ([] (dependencies []))
   ([extra-routes]
-   {:routes (routes extra-routes)}))
+   {:router (router extra-routes)}))
 
 (defn resource-handler
   ([dependencies] (resource-handler dependencies {}))
-  ([dependencies options]
-   (-> (health-resource/handler dependencies options)
+  ([dependencies overrides]
+   (-> (health-resource/handler dependencies overrides)
      ring-keyword-params/wrap-keyword-params
      ring-params/wrap-params)))
 
@@ -39,7 +39,7 @@
   (let [handler (resource-handler (dependencies))
         request (ring/request :get "/")
         result (handler request)]
-    (is (= (:status result) 200))))
+    (is (= 200 (:status result)))))
 
 (deftest includes-self-link
   (let [handler (resource-handler (dependencies))
