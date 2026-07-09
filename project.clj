@@ -1,4 +1,4 @@
-(defproject io.logicblocks/liberator.resource.health "0.1.3-RC11"
+(defproject io.logicblocks/liberator.resource.health "0.1.3-RC12"
   :description "A health resource for liberator."
   :url "https://github.com/logicblocks/liberator.resource.health"
 
